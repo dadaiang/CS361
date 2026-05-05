@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Activity Detector</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 50px auto;
+      background: white;
+      padding: 35px;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      color: #111827;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input:focus, select:focus {
+      outline: 3px solid #bfdbfe;
+      border-color: #2563eb;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .error {
+      margin-top: 18px;
+      padding: 12px;
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 5px solid #dc2626;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .result-card {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .safe {
+      background: #dcfce7;
+      border-left: 6px solid #16a34a;
+    }
+
+    .suspicious {
+      background: #fef3c7;
+      border-left: 6px solid #f59e0b;
+    }
+
+    .result-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .details {
+      margin-top: 15px;
+      line-height: 1.6;
+    }
+
+    .footer-note {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <h1>Login Activity Detector</h1>
+    <p class="subtitle">
+      Enter login information below to check whether the activity appears safe or suspicious.
+    </p>
+
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input id="username" type="text" placeholder="Example: student123" />
+    </div>
+
+    <div class="form-group">
+      <label for="location">Login Location</label>
+      <input id="location" type="text" placeholder="Example: Portland" />
+    </div>
+
+    <div class="form-group">
+      <label for="device">Device Type</label>
+      <select id="device">
+        <option value="">Select a device</option>
+        <option value="laptop">Laptop</option>
+        <option value="phone">Phone</option>
+        <option value="tablet">Tablet</option>
+        <option value="unknown">Unknown Device</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="time">Login Time</label>
+      <select id="time">
+        <option value="">Select login time</option>
+        <option value="normal">Normal Hours</option>
+        <option value="late">Late Night</option>
+      </select>
+    </div>
+
+    <button onclick="analyzeLogin()">Analyze Login Activity</button>
+
+    <div id="error" class="error"></div>
+
+    <section id="resultCard" class="result-card">
+      <div id="resultTitle" class="result-title"></div>
+      <p id="explanation"></p>
+
+      <div class="details">
+        <strong>Analysis Details:</strong>
+        <ul id="detailsList"></ul>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      This prototype checks multiple factors including location, device type, and login time.
+    </p>
+  </main>
+
+  <script>
+    function analyzeLogin() {
+      const username = document.getElementById("username").value.trim();
+      const location = document.getElementById("location").value.trim();
+      const device = document.getElementById("device").value;
+      const time = document.getElementById("time").value;
+
+      const error = document.getElementById("error");
+      const resultCard = document.getElementById("resultCard");
+      const resultTitle = document.getElementById("resultTitle");
+      const explanation = document.getElementById("explanation");
+      const detailsList = document.getElementById("detailsList");
+
+      error.style.display = "none";
+      resultCard.style.display = "none";
+      detailsList.innerHTML = "";
+
+      if (!username || !location || !device || !time) {
+        error.textContent = "Please complete all fields before analyzing the login activity.";
+        error.style.display = "block";
+        return;
+      }
+
+      let suspiciousReasons = [];
+
+      if (location.toLowerCase() !== "portland") {
+        suspiciousReasons.push("Login location is different from the expected location.");
+      }
+
+      if (device === "unknown") {
+        suspiciousReasons.push("The device type is unknown.");
+      }
+
+      if (time === "late") {
+        suspiciousReasons.push("The login happened during unusual late-night hours.");
+      }
+
+      resultCard.className = "result-card";
+
+      if (suspiciousReasons.length > 0) {
+        resultCard.classList.add("suspicious");
+        resultTitle.textContent = "⚠️ Suspicious Login Detected";
+        explanation.textContent =
+          "This login may be unsafe because one or more unusual factors were found.";
+      } else {
+        resultCard.classList.add("safe");
+        resultTitle.textContent = "✅ Safe Login";
+        explanation.textContent =
+          "This login appears safe because the location, device, and time match expected behavior.";
+      }
+
+      const summaryItems = suspiciousReasons.length > 0
+        ? suspiciousReasons
+        : [
+            "Login location matches expected location.",
+            "Device type is recognized.",
+            "Login time is normal."
+          ];
+
+      summaryItems.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        detailsList.appendChild(li);
+      });
+
+      resultCard.style.display = "block";
+    }
+  </script>
+</body>
+</html>
